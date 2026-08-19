@@ -29,8 +29,9 @@ def predict_mood(image: Image.Image) -> float:
     interpreter = load_interpreter()
     input_details = interpreter.get_input_details()[0]
     output_details = interpreter.get_output_details()[0]
+    # The TFLite model contains the Rescaling(1 / 200) layer from training.
     array = np.asarray(image.convert("RGB").resize(IMAGE_SIZE), dtype=np.float32)
-    array = np.expand_dims(array / 200.0, axis=0)
+    array = np.expand_dims(array, axis=0)
     interpreter.set_tensor(input_details["index"], array.astype(input_details["dtype"]))
     interpreter.invoke()
     return float(interpreter.get_tensor(output_details["index"])[0][0])
